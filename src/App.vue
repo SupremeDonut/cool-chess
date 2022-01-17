@@ -27,5 +27,8 @@ export default {
 
 body {
 	background: rgb(24, 24, 26);
+	background-image: url("./assets/bg.png");
+	background-size: 500px;
+	background-repeat: repeat;
 }
 </style>
