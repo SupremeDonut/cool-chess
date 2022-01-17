@@ -85,11 +85,18 @@ export default {
 				held = null;
 			}
 		}
+		var prevX, prevY = 0;
 		window.onmousemove = e => {
 			if (held) {
-				var diffX = abs(e.clientX, true) - size / 2;
-				var diffY = abs(e.clientY, false) - size / 2;
+				var [diffX, diffY] = [prevX, prevY];
+				if (size / 2 < e.clientX && e.clientX < window.innerWidth - size / 2) {
+					diffX = abs(e.clientX, true) - size / 2;
+				}
+				if (size / 2 < e.clientY && e.clientY < window.innerHeight - size / 2) {
+					diffY = abs(e.clientY, false) - size / 2;
+				}
 				document.getElementById(held).style.transform = `translate(${diffX}px, ${diffY}px)`;
+				[prevX, prevY] = [diffX, diffY];
 			}
 		}
 

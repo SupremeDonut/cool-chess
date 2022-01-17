@@ -8,8 +8,12 @@ import {getValidMoves} from "@/scripts/game.js";
 export default {
 	"name": "Squares",
 	show_squares(square, squareSize) {
+		var div = document.createElement("div");
+		div.className = "square src";
+		div.style.transform = `translate(${square[0]}px, ${square[1]}px)`;
+		document.getElementById("square-container").appendChild(div);		
 		for (const [x, y] of getValidMoves(square, squareSize)) {
-			var div = document.createElement("div");
+			div = document.createElement("div");
 			div.className = "square";
 			div.style.transform = `translate(${x}px, ${y}px)`;
 			document.getElementById("square-container").appendChild(div);
@@ -38,7 +42,10 @@ export default {
 	top: 0px;
 	width: 12.5%;
 	height: 12.5%;
-	opacity: 0.5;
+	opacity: 0.7;
 	background-color: cyan;
+}
+.src {
+	background-color: aquamarine;
 }
 </style>
