@@ -1,5 +1,7 @@
 # cool-chess
+Simple chess GUI made for fun
 
+Note: pieces and board are from [lichess](https://lichess.org) but will (probably) be updated later
 ## Project setup
 ```
 npm install
@@ -20,5 +22,3 @@ npm run build
 npm run lint
 ```
 
-### Customize configuration
-See [Configuration Reference](https://cli.vuejs.org/config/).
