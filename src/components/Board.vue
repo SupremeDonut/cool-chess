@@ -19,16 +19,18 @@
 			<use y="4" href="#a"/>
 		</svg>
 		<Squares/>
+		<Labels/>
 	</div>
 </template>
 
 <script>
 import Squares from "@/components/Squares.vue";
+import Labels from "@/components/Labels.vue";
 import {makeMove} from "@/scripts/game.js";
 
 export default {
 	name: "Board",
-	components: {Squares},
+	components: {Squares, Labels},
 	mounted() {
 		var positions = {};
 		const pieces = {
@@ -149,6 +151,7 @@ export default {
 	height: var(--board-size);
 	outline: 4px solid rgb(6, 92, 141);
 	border-radius: 2px;
+	box-shadow: 0px 0px 20px black;
 }
 
 .piece {
