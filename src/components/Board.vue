@@ -18,14 +18,18 @@
 			</g>
 			<use y="4" href="#a"/>
 		</svg>
+		<Squares/>
 	</div>
 </template>
 
 <script>
+import Squares from "@/components/Squares.vue";
+import {makeMove} from "@/scripts/game.js";
+
 export default {
 	name: "Board",
+	components: {Squares},
 	mounted() {
-		console.log("E");
 		var positions = {};
 		const pieces = {
 			"p": "black pawn",
@@ -41,36 +45,14 @@ export default {
 			"k": "black king",
 			"K": "white king",
 		}
-		const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 		const size = getComputedStyle(document.body).getPropertyValue("--board-size").slice(0, -2) / 8;
-		var col = 0;
-		var row = 0;
-
-		for (var i = 0; i < FEN.length; i++) {
-			var char = FEN.charAt(i);
-			if (char == "/") {
-				col = -1;
-				row++;
-			} else if (pieces[char] != undefined) {
-				var div = document.createElement("div");
-				div.className = "piece " + pieces[char];
-				div.id = "piece" + i;
-				var transform = [col * size, row * size];
-				div.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
-				positions[div.id] = transform;
-				document.getElementById("board").appendChild(div);
-			} else {
-				col += parseInt(char) - 1;
-			}
-			col++;
-		}
-		var held = null;
-
+		var held;
 		window.onmousedown = e => {
 			var target = e.target;
 			if (target.className.startsWith?.("piece")) {
 				held = target.id;
 				target.style.zIndex = 1;
+				Squares.show_squares(positions[held], size);
 			}
 		}
 		window.onmouseup = e => {
@@ -80,13 +62,26 @@ export default {
 				if (0 <= posX && posX < 8 && 0 <= posY && posY < 8) {				
 					posX *= size;
 					posY *= size;
+					var src = positions[held];
 					positions[held] = [posX, posY];
+					if (JSON.stringify(src) != JSON.stringify(positions[held])) {
+						var ret = makeMove(src, 
+							positions[held], 
+							size,
+							document.getElementById(held).className.split(" ")[2]
+							);
+						if (ret == null) {
+							[posX, posY] = src;
+							positions[held] = src;
+						}
+					}
 				} else {
 					posX = positions[held][0];
 					posY = positions[held][1];
 				}
 				document.getElementById(held).style.transform = `translate(${posX}px, ${posY}px)`;
 				document.getElementById(held).style.zIndex = 0;
+				Squares.hide_squares();
 				held = null;
 			}
 		}
@@ -97,6 +92,33 @@ export default {
 				document.getElementById(held).style.transform = `translate(${diffX}px, ${diffY}px)`;
 			}
 		}
+
+		var setBoard = function() {
+			const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
+			
+			var col = 0;
+			var row = 0;
+
+			for (var i = 0; i < FEN.length; i++) {
+				var char = FEN.charAt(i);
+				if (char == "/") {
+					col = -1;
+					row++;
+				} else if (pieces[char] != undefined) {
+					var div = document.createElement("div");
+					div.className = "piece " + pieces[char];
+					div.id = "piece" + i;
+					var transform = [col * size, row * size];
+					div.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
+					positions[div.id] = transform;
+					document.getElementById("board").appendChild(div);
+				} else {
+					col += parseInt(char) - 1;
+				}
+				col++;
+			}	
+		}
+		setBoard();	
 
 		var abs = function(pos, left) { // gets the position of the piece relative to its top left
 			var board = document.getElementById("board").getBoundingClientRect();
@@ -118,10 +140,8 @@ export default {
 	margin: 5rem;
 	width: var(--board-size);
 	height: var(--board-size);
-}
-
-svg {
 	outline: 4px solid rgb(6, 92, 141);
+	border-radius: 2px;
 }
 
 .piece {
@@ -129,7 +149,7 @@ svg {
 	left: 0px;
 	top: 0px;
 	width: 12.5%;
-	aspect-ratio: 1;
+	height: 12.5%;
 	user-select: none;
 	background-size: cover;
 }
