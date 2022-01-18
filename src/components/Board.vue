@@ -146,7 +146,6 @@ export default {
 @import "../styles/pieces.css";
 #board {
 	position: relative;
-	margin: 5rem;
 	width: var(--board-size);
 	height: var(--board-size);
 	outline: 4px solid rgb(6, 92, 141);

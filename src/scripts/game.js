@@ -1,3 +1,5 @@
+import Moves from "@/components/Moves.vue";
+
 const chess = require("chess");
 
 export const game = chess.create({"PGN": true});
@@ -31,7 +33,16 @@ export function makeMove(src, dest, size, piece) {
 			&& move.dest.file == dest[0]
 			&& move.dest.rank == dest[1]
 			) {
-				return game.move(notation);
+				var name = move.src.piece.side.name;
+				game.move(notation);
+				var status = "";
+				if (game.getStatus().isCheck) {
+					status += "+";
+				} else if (game.getStatus().isCheckmate) {
+					status += "#";
+				}
+				Moves.onMove(notation + status, name);
+				return true;
 			}
 	}
 	return;
