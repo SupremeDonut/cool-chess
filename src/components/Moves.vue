@@ -21,7 +21,7 @@ export default {
 			var div = document.createElement("div");
 			div.className = "move num";
 			div.innerHTML = cur_move + ".";
-			list.style.gridTemplateRows = `repeat(${cur_move}, 25px)`
+			list.style.gridTemplateRows = `repeat(${cur_move}, 25px)`;
 			list.appendChild(div);
 		}
 		div = document.createElement("div");
@@ -37,14 +37,15 @@ export default {
 #move-sidebar {
 	width: 100%;
 	height: 100%;
-	background: whitesmoke;
+	background: rgb(255, 253, 250);
 	border-radius: 7px;
 	overflow: hidden;
+	outline: 3px solid rgb(6, 92, 141);
 }
 
 #move-header {
 	height: 50px;
-	background-color: rgb(130, 138, 255);
+	background-color: rgb(112, 140, 218);
 	padding: 10px;
 	text-align: center;
 }
@@ -62,7 +63,7 @@ export default {
 
 .move.num {
 	text-align: center;
-	background-color: burlywood;
+	background-color: rgb(236, 213, 178);
 }
 
 .move.white {

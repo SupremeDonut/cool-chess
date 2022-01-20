@@ -1,4 +1,6 @@
+import Board from "@/components/Board.vue";
 import Moves from "@/components/Moves.vue";
+import Squares from "@/components/Squares.vue";
 
 const chess = require("chess");
 
@@ -34,7 +36,8 @@ export function makeMove(src, dest, size, piece) {
 			&& move.dest.rank == dest[1]
 			) {
 				var name = move.src.piece.side.name;
-				game.move(notation);
+				var ret = game.move(notation);
+				var capture = ret.move.capturedPiece;
 				var status = "";
 				if (game.getStatus().isCheck) {
 					status += "+";
@@ -42,6 +45,38 @@ export function makeMove(src, dest, size, piece) {
 					status += "#";
 				}
 				Moves.onMove(notation + status, name);
+
+				if (status) {
+					for (var square of game.getStatus().board.squares) {
+						if (square.piece?.type == "king" && square.piece.side.name != name) {
+							Squares.showAttack("abcdefgh".indexOf(square.file) * size, (8 - square.rank) * size);
+							break;
+						}
+					}
+				} else {
+					Squares.hide_squares(true);
+				}
+				
+				if (capture) {
+					if (piece == "pawn" && capture.type == "pawn") {
+						var enPassant = 2;
+						var pos = Board.positions;
+						for (var id in pos) {
+							if (JSON.stringify(pos[id]) == JSON.stringify(["abcdefgh".indexOf(move.dest.file) * size, (8 - move.dest.rank) * size])) {
+								enPassant--;
+							}
+						}
+						if (enPassant) {
+							if (name == "white") {
+								return ["abcdefgh".indexOf(move.dest.file) * size, (9 - move.dest.rank) * size];
+							} else {
+								return ["abcdefgh".indexOf(move.dest.file) * size, (7 - move.dest.rank) * size];
+							}
+						}
+					}
+					
+					return ["abcdefgh".indexOf(move.dest.file) * size, (8 - move.dest.rank) * size];
+				}
 				return true;
 			}
 	}

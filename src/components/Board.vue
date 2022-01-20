@@ -20,6 +20,8 @@
 		</svg>
 		<Squares/>
 		<Labels/>
+		<div id="pieces">
+		</div>
 	</div>
 </template>
 
@@ -28,11 +30,12 @@ import Squares from "@/components/Squares.vue";
 import Labels from "@/components/Labels.vue";
 import {makeMove} from "@/scripts/game.js";
 
+var positions = {};
 export default {
 	name: "Board",
 	components: {Squares, Labels},
+	positions: positions,
 	mounted() {
-		var positions = {};
 		const pieces = {
 			"p": "black pawn",
 			"P": "white pawn",
@@ -75,6 +78,14 @@ export default {
 						if (ret == null) {
 							[posX, posY] = src;
 							positions[held] = src;
+						} else if (typeof(ret) == "object") {
+							console.log(ret)
+							for (var id in positions) {
+								if (id != held && JSON.stringify(ret) == JSON.stringify(positions[id])) {
+									document.getElementById(id).remove();
+									delete positions[id];
+								}
+							}
 						}
 					}
 				} else {
@@ -120,7 +131,7 @@ export default {
 					var transform = [col * size, row * size];
 					div.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
 					positions[div.id] = transform;
-					document.getElementById("board").appendChild(div);
+					document.getElementById("pieces").appendChild(div);
 				} else {
 					col += parseInt(char) - 1;
 				}
