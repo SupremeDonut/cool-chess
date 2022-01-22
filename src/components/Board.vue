@@ -79,8 +79,7 @@ export default {
 							[posX, posY] = src;
 							positions[held] = src;
 						} else if (typeof(ret) == "object") {
-							console.log(ret)
-							for (var id in positions) {
+							for (const id in positions) {
 								if (id != held && JSON.stringify(ret) == JSON.stringify(positions[id])) {
 									document.getElementById(id).remove();
 									delete positions[id];

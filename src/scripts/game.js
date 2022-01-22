@@ -13,12 +13,16 @@ export function getSquareName(transX, transY, squareSize) {
 	return xPos + (8 - transY);
 }
 
+export function getSquarePos(file, rank, size) {
+	return ["abcdefgh".indexOf(file) * size, (8 - rank) * size]
+}
+
 export function getValidMoves(square, size) {
 	square = getSquareName(...square, size);
 	var moves = [];
 	for (const [, move] of Object.entries(game.getStatus().notatedMoves)) {
 		if (move.src.file == square[0] && move.src.rank == square[1]) {
-			moves.push(["abcdefgh".indexOf(move.dest.file) * size, (8 - move.dest.rank) * size])
+			moves.push(getSquarePos(move.dest.file, move.dest.rank, size))
 		}
 	}
 	return moves;
@@ -35,10 +39,32 @@ export function makeMove(src, dest, size, piece) {
 			&& move.dest.file == dest[0]
 			&& move.dest.rank == dest[1]
 			) {
+				var pos = Board.positions;
 				var name = move.src.piece.side.name;
 				var ret = game.move(notation);
 				var capture = ret.move.capturedPiece;
 				var status = "";
+				if (notation == "O-O") {
+					for (const id in pos) {
+						if (JSON.stringify(pos[id]) == `[${size * 7},${size * 7}]` && name == "white"
+							|| JSON.stringify(pos[id]) == `[${size * 7},0]` && name == "black"
+						) {
+							pos[id][0] -= size * 2;
+							document.getElementById(id).style.transform = `translate(${pos[id][0]}px, ${pos[id][1]}px)`;
+							break;
+						}
+					}
+				} else if (notation == "O-O-O") {
+					for (const id in pos) {
+							if (JSON.stringify(pos[id]) == `[0,${size * 7}]` && name == "white"
+							|| JSON.stringify(pos[id]) == `[0,0]` && name == "black"
+						) {
+							pos[id][0] += size * 3;
+							document.getElementById(id).style.transform = `translate(${pos[id][0]}px, ${pos[id][1]}px)`;
+							break;
+						}
+					}
+				}
 				if (game.getStatus().isCheck) {
 					status += "+";
 				} else if (game.getStatus().isCheckmate) {
@@ -47,9 +73,10 @@ export function makeMove(src, dest, size, piece) {
 				Moves.onMove(notation + status, name);
 
 				if (status) {
-					for (var square of game.getStatus().board.squares) {
+					for (const square of game.getStatus().board.squares) {
 						if (square.piece?.type == "king" && square.piece.side.name != name) {
-							Squares.showAttack("abcdefgh".indexOf(square.file) * size, (8 - square.rank) * size);
+							console.log(square)
+							Squares.showAttack(...getSquarePos(square.file, square.rank, size));
 							break;
 						}
 					}
@@ -60,22 +87,21 @@ export function makeMove(src, dest, size, piece) {
 				if (capture) {
 					if (piece == "pawn" && capture.type == "pawn") {
 						var enPassant = 2;
-						var pos = Board.positions;
-						for (var id in pos) {
-							if (JSON.stringify(pos[id]) == JSON.stringify(["abcdefgh".indexOf(move.dest.file) * size, (8 - move.dest.rank) * size])) {
+						for (const id in pos) {
+							if (JSON.stringify(pos[id]) == JSON.stringify(getSquarePos(move.dest.file, move.dest.rank, size))) {
 								enPassant--;
 							}
 						}
 						if (enPassant) {
 							if (name == "white") {
-								return ["abcdefgh".indexOf(move.dest.file) * size, (9 - move.dest.rank) * size];
+								return getSquarePos(move.dest.file, move.dest.rank - 1, size);
 							} else {
-								return ["abcdefgh".indexOf(move.dest.file) * size, (7 - move.dest.rank) * size];
+								return getSquarePos(move.dest.file, move.dest.rank + 1, size);
 							}
 						}
 					}
 					
-					return ["abcdefgh".indexOf(move.dest.file) * size, (8 - move.dest.rank) * size];
+					return getSquarePos(move.dest.file, move.dest.rank, size);
 				}
 				return true;
 			}

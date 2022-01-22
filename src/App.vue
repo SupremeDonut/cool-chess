@@ -28,7 +28,7 @@ export default {
 }
 
 :root {
-	--board-size: 700px;
+	--board-size: 640px; /* must be multiple of 8px*/
 }
 
 body {

@@ -1,7 +1,7 @@
 <template>
 	<div id="move-sidebar">
 		<h2 id="move-header">
-			Moves:
+			Moves
 		</h2>
 		<div id="move-list">
 		</div>
@@ -46,8 +46,10 @@ export default {
 #move-header {
 	height: 50px;
 	background-color: rgb(112, 140, 218);
-	padding: 10px;
+	padding: 3px;
 	text-align: center;
+	font-size: 32px;
+	font-family: "Playfair Display", serif;
 }
 
 #move-list {

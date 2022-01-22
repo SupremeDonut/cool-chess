@@ -69,6 +69,6 @@ export default {
 }
 
 .attack {
-	background: radial-gradient(circle at center, red 10%, rgba(0, 0, 0, 0) 75%);
+	background: radial-gradient(circle at center, red 10%, transparent 75%);
 }
 </style>
