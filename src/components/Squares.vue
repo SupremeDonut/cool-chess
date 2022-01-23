@@ -5,40 +5,40 @@
 
 <script>
 import {getValidMoves} from "@/scripts/game.js";
-var attack;
+let attack = null;
 
 export default {
 	"name": "Squares",
 	show_squares(square, squareSize) {
-		var div = document.createElement("div");
+		let div = document.createElement("div");
 		div.className = "square src";
-		div.style.transform = `translate(${Math.floor(square[0])}px, ${Math.floor(square[1])}px)`;
+		div.style.transform = `translate(${square[0]}px, ${square[1]}px)`;
 		document.getElementById("square-container").appendChild(div);		
 		for (const [x, y] of getValidMoves(square, squareSize)) {
 			div = document.createElement("div");
 			div.className = "square";
-			div.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`;
+			div.style.transform = `translate(${x}px, ${y}px)`;
 			document.getElementById("square-container").appendChild(div);
 		}
 	},
 	hide_squares(hide_attack = false) {
-		var container = document.getElementById("square-container");
-		while (container.firstChild) {
+		let container = document.getElementById("square-container");
+		while (container.firstChild) { // remove all children
 			container.removeChild(container.firstChild);
 		}
-		if (attack && !hide_attack) {
-			var div = document.createElement("div");
+		if (attack && !hide_attack) { // king attack
+			let div = document.createElement("div");
 			div.className = "square attack";
-			div.style.transform = `translate(${Math.floor(attack[0])}px, ${Math.floor(attack[1])}px)`;
+			div.style.transform = `translate(${attack[0]}px, ${attack[1]}px)`;
 			document.getElementById("square-container").appendChild(div);
 		} else {
 			attack = null;
 		}
 	},
 	showAttack(x, y) {
-		var div = document.createElement("div");
+		let div = document.createElement("div");
 		div.className = "square attack";
-		div.style.transform = `translate(${Math.floor(x)}px, ${Math.floor(y)}px)`;
+		div.style.transform = `translate(${x}px, ${y}px)`;
 		document.getElementById("square-container").appendChild(div);
 		attack = [x, y];
 	}

@@ -27,12 +27,8 @@ export default {
 	box-sizing: border-box;
 }
 
-:root {
-	--board-size: 640px; /* must be multiple of 8px*/
-}
-
 body {
-	background: rgb(24, 24, 26);
+	background: rgb(24, 24, 26); /* TODO: themes */
 	background-image: url("./assets/bg.png");
 	background-size: 500px;
 }
@@ -46,8 +42,16 @@ body {
 
 #main-grid {
 	display: grid;
-	grid-template-columns: var(--board-size) 200px;
+	grid-template-columns: 3fr 1fr;
 	grid-template-rows: 1fr;
 	grid-gap: 20px;
+}
+
+@media screen and (max-width: 640px) {
+	#main-grid {
+		height: calc(var(--board-size) * 1.5);
+		grid-template-columns: 1fr;
+		grid-template-rows: 3fr 1fr;
+	}
 }
 </style>

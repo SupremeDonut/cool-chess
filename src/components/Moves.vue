@@ -9,34 +9,34 @@
 </template>
 
 <script>
-var moves = [];
-var cur_move = 0;
+let 
+	moves = [],
+	cur_move = 0;
+
 export default {
 	"name": "Moves",
 	onMove(move, side) {
-		var list = document.getElementById("move-list");
+		let list = document.getElementById("move-list");
 		moves.push(move);
 		if (side == "white") {
-			cur_move++;
-			var div = document.createElement("div");
+			cur_move++; // add move num div
+			let div = document.createElement("div");
 			div.className = "move num";
 			div.innerHTML = cur_move + ".";
 			list.style.gridTemplateRows = `repeat(${cur_move}, 25px)`;
 			list.appendChild(div);
 		}
-		div = document.createElement("div");
+		let div = document.createElement("div");
 		div.className = "move " + side;
 		div.innerHTML = move;
 		list.appendChild(div);
-		list.scrollTop = list.scrollHeight;
+		list.scrollTop = list.scrollHeight; // scroll to bottom of list
 	}
 }
 </script>
 
 <style>
 #move-sidebar {
-	width: 100%;
-	height: 100%;
 	background: rgb(255, 253, 250);
 	border-radius: 7px;
 	overflow: hidden;
@@ -54,7 +54,7 @@ export default {
 
 #move-list {
 	display: grid;
-	height: calc(var(--board-size) - 50px);
+	height: calc(100% - 50px);
 	grid-template-columns: 2fr 5fr 5fr;
 	overflow-y: auto;
 }

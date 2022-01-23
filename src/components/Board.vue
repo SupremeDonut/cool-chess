@@ -30,12 +30,17 @@ import Squares from "@/components/Squares.vue";
 import Labels from "@/components/Labels.vue";
 import {makeMove} from "@/scripts/game.js";
 
-var positions = {};
+let
+	positions = {},
+	size = Math.max(57, Math.min(80, Math.round((window.innerWidth / 2) / 8)));
+
 export default {
 	name: "Board",
 	components: {Squares, Labels},
 	positions: positions,
+	size: size,
 	mounted() {
+		document.documentElement.style.setProperty("--board-size", size * 8 + "px");
 		const pieces = {
 			"p": "black pawn",
 			"P": "white pawn",
@@ -50,35 +55,36 @@ export default {
 			"k": "black king",
 			"K": "white king",
 		}
-		const size = getComputedStyle(document.body).getPropertyValue("--board-size").slice(0, -2) / 8;
-		var held;
+		let held = null;
 		window.onmousedown = e => {
-			var target = e.target;
+			let target = e.target;
 			if (target.className.startsWith?.("piece")) {
 				held = target.id;
 				target.style.zIndex = 1;
 				Squares.show_squares(positions[held], size);
 			}
 		}
+
 		window.onmouseup = e => {
 			if (held) {
-				var posX = Math.round((abs(e.clientX, true) - size / 2) / size);
-				var posY = Math.round((abs(e.clientY, false) - size / 2) / size);
-				if (0 <= posX && posX < 8 && 0 <= posY && posY < 8) {				
+				let
+					posX = Math.round((abs(e.clientX, true) - size / 2) / size),
+					posY = Math.round((abs(e.clientY, false) - size / 2) / size);
+				if (0 <= posX && posX < 8 && 0 <= posY && posY < 8) { // checks	if its on the board
 					posX *= size;
 					posY *= size;
-					var src = positions[held];
+					let src = positions[held];
 					positions[held] = [posX, posY];
 					if (JSON.stringify(src) != JSON.stringify(positions[held])) {
-						var ret = makeMove(src, 
+						let ret = makeMove(src, 
 							positions[held], 
 							size,
 							document.getElementById(held).className.split(" ")[2]
 							);
-						if (ret == null) {
+						if (ret == null) { // bad move, reset pos
 							[posX, posY] = src;
 							positions[held] = src;
-						} else if (typeof(ret) == "object") {
+						} else if (typeof(ret) == "object") { // remove piece if captured
 							for (const id in positions) {
 								if (id != held && JSON.stringify(ret) == JSON.stringify(positions[id])) {
 									document.getElementById(id).remove();
@@ -87,7 +93,7 @@ export default {
 							}
 						}
 					}
-				} else {
+				} else { // reset position if it is invalid
 					posX = positions[held][0];
 					posY = positions[held][1];
 				}
@@ -97,12 +103,12 @@ export default {
 				held = null;
 			}
 		}
-		var prevX, prevY = 0;
+		let prevX, prevY = 0;
 		window.onmousemove = e => {
 			if (held) {
-				var [diffX, diffY] = [prevX, prevY];
-				if (size / 2 < e.clientX && e.clientX < window.innerWidth - size / 2) {
-					diffX = abs(e.clientX, true) - size / 2;
+				let [diffX, diffY] = [prevX, prevY];
+				if (size / 2 < e.clientX && e.clientX < window.innerWidth - size / 2) { // dont drag offscreen
+					diffX = abs(e.clientX, true) - size / 2; // change in pos from original position
 				}
 				if (size / 2 < e.clientY && e.clientY < window.innerHeight - size / 2) {
 					diffY = abs(e.clientY, false) - size / 2;
@@ -112,22 +118,45 @@ export default {
 			}
 		}
 
-		var setBoard = function() {
+		window.onresize = () => {
+			let before = document.documentElement.style.getPropertyValue("--board-size").slice(0, -2) / 8;
+			size = Math.max(57, Math.min(80, Math.round((window.innerWidth / 2) / 8)));
+			let scale = size / before;
+			if (scale == 1) {return;}
+			document.documentElement.style.setProperty("--board-size", size * 8 + "px");
+			for (const id in positions) {
+				positions[id][0] *= scale;
+				positions[id][1] *= scale;
+				document.getElementById(id).style.transform = `translate(${positions[id][0]}px, ${positions[id][1]}px)`;
+			}
+
+			let attack = document.getElementsByClassName("square attack")[0];
+			if (attack) { // scales attack square
+				let pos = [];
+				for (const match of attack.style.transform.matchAll(/([0-9]+)px/g)) {
+					pos.push(match[1] * scale);
+				}
+				attack.style.transform = `translate(${pos[0]}px, ${pos[1]}px)`;
+			}
+		}
+
+		let setBoard = function() {
 			const FEN = "rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR";
 			
-			var col = 0;
-			var row = 0;
+			let
+				col = 0,
+				row = 0;
 
-			for (var i = 0; i < FEN.length; i++) {
-				var char = FEN.charAt(i);
+			for (let i = 0; i < FEN.length; i++) {
+				let char = FEN.charAt(i);
 				if (char == "/") {
 					col = -1;
 					row++;
 				} else if (pieces[char] != undefined) {
-					var div = document.createElement("div");
+					let div = document.createElement("div");
 					div.className = "piece " + pieces[char];
 					div.id = "piece" + i;
-					var transform = [col * size, row * size];
+					let transform = [col * size, row * size];
 					div.style.transform = `translate(${transform[0]}px, ${transform[1]}px)`;
 					positions[div.id] = transform;
 					document.getElementById("pieces").appendChild(div);
@@ -139,13 +168,9 @@ export default {
 		}
 		setBoard();	
 
-		var abs = function(pos, left) { // gets the position of the piece relative to its top left
-			var board = document.getElementById("board").getBoundingClientRect();
-			if (left) {
-				return pos - board.left;
-			} else {
-				return pos - board.top;
-			}
+		let abs = function(pos, left) { // gets the position of the piece relative to its top left
+			let board = document.getElementById("board").getBoundingClientRect();
+			return left ? pos - board.left : pos - board.top;
 		}
 	}
 }

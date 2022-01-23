@@ -31,7 +31,7 @@ export default {
 #label-container-top {
 	position: absolute;
 	left: 3px;
-	top: -4%;
+	top: 0px;
 	width: 12.5%;
 	height: 100%;
 	display: flex;
@@ -41,8 +41,8 @@ export default {
 
 #label-container-bottom {
 	position: absolute;
-	left: -4.5%;
-	top: 87.5%;
+	left: 3px;
+	bottom: 13px;
 	width: 100%;
 	height: 12.5%;
 	display: flex;
@@ -51,6 +51,8 @@ export default {
 }
 
 span {
+	width: 12.5%;
+	height: 12.5%;
 	user-select: none;
 	color: rgb(0, 0, 70);
 	font-family: "Poppins", sans-serif;
